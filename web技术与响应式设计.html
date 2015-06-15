@@ -1,0 +1,363 @@
+<meta charset="utf-8">
+<h1> web技术与响应式设计 </h1> 
+
+<p>ETHAN MARCOTTE的文章《响应式Web设计》讲述了在可伸缩的网页基础上使用 Media Query 来实现响应的响应式设计。
+而本文试从前端角度整理了近年来可供实现"可伸缩基础"和"响应“的前端技术。</p>
+
+<script>
+
+function iframe(id){
+    var iframe = document.createElement('iframe');
+    iframe.src = 'data:text/html,<meta charset="gbk"><style>body{margin:0 0 0 0;}</style>'+document.getElementById(id).innerHTML;
+    iframe.onload = function(){
+        //iframe.contentWindow.document.documentElement.innerHTML = document.getElementById(id).innerHTML;
+    }
+    iframe.style.cssText = 'width:320px;height:480px;transition:width ease 1s,height ease 1s';
+    
+    var btn = document.createElement('button');
+    btn.innerText = 'expand';
+    btn.style.width = '320px';
+    btn.style.display = 'block';
+    btn.onclick = function(){
+        if(iframe.style.width === '320px') {
+            iframe.style.width = '640px';
+            //iframe.style.height = '1136px';
+        } else {
+            iframe.style.width = '320px';
+            //iframe.style.height = '480px';
+        }
+    };
+    document.body.appendChild(btn);
+    document.body.appendChild(iframe);
+    document.body.appendChild(document.createElement('br'));
+}
+function show(id) {
+    var pre = document.createElement('pre');
+    pre.innerText = document.getElementById(id).innerHTML;
+    document.body.appendChild(pre);
+}
+</script>
+
+<h2> 一、Media Query</h2>
+<script type="text/html" id="s1">
+    <style>
+        div {
+            font-size:16px;
+        }
+        @media (min-width: 401px){
+            div {
+                font-size:32px;
+            }
+        }
+    </style>
+    <div>text</div>
+</script>
+<script>show('s1');</script>
+
+<script type="text/html" id="t1">
+    <style>
+        div {
+            font-size:16px;
+        }
+        @media (min-width: 401px){
+            div {
+                font-size:32px;
+            }
+        }
+    </style>
+    <div>text</div>
+</script>
+<script>iframe('t1');</script>
+
+<p>Media query通过指定条件切换CSS，对适配来说，Media query可谓核武器一样的功能，
+但是滥用Media query将会导致CSS难以维护（如一些开发者将会为不同的尺寸的设备指定完全不同的两套或者几套CSS，
+这样的使用方式背离了响应式设计的哲学。）</p>
+
+
+<h2> 二、流排版</h2>
+<script type="text/html" id="s2">
+    <style>
+    
+        #container {
+            font-size:0px;
+        }
+
+        #container>div {
+            display:inline-block;
+            height:100px;
+            width:100px;
+        }
+    </style>
+    <div id="container"><div>1</div> <div>2</div> <div>3</div> <div>4</div> 
+        <div>5</div> <div>6</div> <div>7</div> <div>8</div>
+        <div>9</div> <div>10</div> <div>11</div> <div>12</div>
+    </div>
+</script>
+<script>show('s2');</script>
+
+<script type="text/html" id="t2">
+    <style>
+    
+        #container {
+            font-size:0px;
+        }
+
+        #container>div {
+            display:inline-block;
+            height:100px;
+            width:100px;
+            
+            line-height:100px;
+            text-align:center;
+            border:solid 1px lightblue;
+            font-size:16px;
+        }
+    </style>
+    <div id="container"><div>1</div> <div>2</div> <div>3</div> <div>4</div> 
+        <div>5</div> <div>6</div> <div>7</div> <div>8</div>
+        <div>9</div> <div>10</div> <div>11</div> <div>12</div>
+    </div>
+</script>
+<script>iframe('t2');</script>
+
+<p>流排版是浏览器的基本排版方式，针对不同宽度的页面，流排版方式可以充分利用空间。
+inline-block使得我们可以对块状元素像文字一样做流排版。</p>
+
+
+<h2> 三、宽高最大最小值</h2>
+<script type="text/html" id="s3">
+    <style>
+        div {
+            min-width:200px;
+            max-width:300px;
+            width:50%;
+        }
+
+    </style>
+    <div>50%</div>
+</script>
+<script>show('s3');</script>
+
+<script type="text/html" id="t3">
+    <style>
+        div {
+            min-width:200px;
+            max-width:300px;
+            width:50%;
+            height:100px;
+            background-color:#ff5000;
+            margin-left:auto;
+            margin-right:auto;
+            line-height:100px;
+            text-align:center;
+        }
+
+    </style>
+    <div>50%</div>
+</script>
+
+<script>iframe('t3');</script>
+<p>宽高最大最小值是非常古老的浏览器特性，指定元素的可伸缩范围，可以避免元素被过度放大或缩小后失去表达作用</p>
+
+
+<h2> 四、多栏</h2>
+<script type="text/html" id="s4">
+    <style>
+        div {
+            column-width:300px;
+        }
+    
+    </style>
+    
+    <div>text text text text text text text text text text text text 
+    text text text text text text text text text text text text text 
+    text text text text text text text text text text text text text 
+    text text text text text text text text text text text text text 
+    text text text text text text text text text text text text text 
+    text text text text text text text text text text text text text 
+    text text text text text text text text text text text text</div>
+
+</script>
+<script>show('s4');</script>
+
+
+<script type="text/html" id="t4">
+    <style>
+        div {
+            column-width:300px;
+            -webkit-column-width:300px;
+            -moz-column-width:130px;
+            -ms-column-width:130px;
+            -o-column-width:130px;
+        }
+    
+    </style>
+    
+    <div>text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</div>
+</script>
+<script>iframe('t4');</script>
+<p>多栏是CSS3的新特性，它是流排版的重要补充，可以避免过长的行造成阅读障碍。</p>
+
+<h2> 五、可伸缩排版</h2>
+<script type="text/html" id="s5">
+    <style>
+        #container {
+            display:flex;
+        }
+        #d1 {
+            width:50px;
+        }
+        #d2 {
+            flex:1;
+        }
+        #d3 {
+            flex:2;
+        }
+    </style>
+    <div id="container"><div id="d1">50px</div><div id="d2">1x</div><div id="d3">2x</div></div>
+</script>
+<script>show('s5');</script>
+
+<script type="text/html" id="t5">
+    <style>
+        div {
+            height:50px;
+            line-height:50px;
+            text-align:center;
+        }
+        #container {
+            display:flex;
+        }
+        #d1 {
+            width:50px;
+            background-color:#ff5000;
+        }
+        #d2 {
+            flex:1;
+            background-color:lightblue;
+        }
+        #d3 {
+            flex:2;
+            background-color:lightgreen;
+        }
+    </style>
+    <div id="container"><div id="d1">50px</div><div id="d2">1x</div><div id="d3">2x</div></div>
+</script>
+<script>iframe('t5');</script>
+<p>可伸缩排版也是CSS3的新特性，它能允许一些元素自适应宽，按比例填满剩余宽度/高度。</p>
+
+<h2> 六、相对单位</h2>
+<script type="text/html" id="s6">
+    <style>
+        div {
+            width:20vw;
+            height:20vw;
+        }
+    </style>
+    <div>1/5</div>
+</script>
+<script>show('s6');</script>
+
+<script type="text/html" id="t6">
+    <style>
+        div {
+            width:20vw;
+            height:20vw;
+            line-height:20vw;
+            text-align:center;
+            background-color:#ff5000;
+        }
+    </style>
+    <div>1/5 w</div>
+</script>
+<script>iframe('t6');</script>
+
+<p>相对单位大约有 % em rem vw wh wmax vmin七种，其中，%是相对父元素的尺寸，em和rem是文字相关， vw wh wmax vmin四种则根据可视区域变化。</p>
+
+
+
+<h2> 七、图片集组</h2>
+<script type="text/html" id="s7">
+    <img srcset="http://gw.alicdn.com/tps/i2/TB1oqcPIXXXXXXDXpXXdIns_XXX-1125-352.jpg_320x320 1x,
+        http://gw.alicdn.com/tps/i2/TB1oqcPIXXXXXXDXpXXdIns_XXX-1125-352.jpg_640x640 2x">
+
+</script>
+<script>show('s7');</script>
+
+
+
+
+<script type="text/html" id="t7">
+    <img srcset="http://gw.alicdn.com/tps/i2/TB1oqcPIXXXXXXDXpXXdIns_XXX-1125-352.jpg_320x320 1x,http://gw.alicdn.com/tps/i2/TB1oqcPIXXXXXXDXpXXdIns_XXX-1125-352.jpg_640x640 2x">
+</script>
+<script>iframe('t7');</script>
+
+<p>图片集组是img标签的srcset和imageset，与其他技术不同，图片集组并不有助于适配屏幕分辨率，它用于适配不同屏幕像素密度（DPR）。</p>
+
+
+    
+<h2> 八、元素锁定宽高比</h2>
+<script type="text/html" id="s8">
+    <style>
+        div::before {
+            content:" ";
+            display:block;
+            padding-bottom:56.25%;
+            width:0;
+            height:0;
+        }
+        div {
+            width:auto;
+            height:auto;
+            position:relative;
+        }
+    </style>
+    <div></div>
+</script>
+<script>show('s8');</script>
+<script type="text/html" id="t8">
+    <style>
+        div::before {
+            content:" ";
+            display:block;
+            padding-bottom:56.25%;
+            width:0;
+            height:0;
+        }
+        div::after {
+            content:"16:9";
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+        }
+        div {
+            width:auto;
+            height:auto;
+            line-height:100%;
+            text-align:center;
+            background-color:#ff5000;
+            position:relative;
+        }
+    </style>
+    <div></div>
+</script>
+<script>iframe('t8');</script>
+<p>元素锁定宽高比严格来说不能算是一门技术，它是利用伪元素、纵向padding等技术巧妙组合实现的，对需求适配的场景，它非常有用。</p>
+
+<h2> 九、矢量图形图片</h2>
+<script type="text/html" id="s9">
+    <img style="width:100%" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><linearGradient id='gradient'><stop offset='10%' stop-color='#F00'/><stop offset='90%' stop-color='#fcc'/> </linearGradient><rect fill='url(#gradient)' x='0' y='0' width='100%' height='100%'/></svg>"/>
+
+</script>
+<script>show('s9');</script>
+<script type="text/html" id="t9">
+<img style="width:100%" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='50'><linearGradient id='gradient'><stop offset='10%' stop-color='#F00'/><stop offset='90%' stop-color='#fcc'/> </linearGradient><rect fill='url(#gradient)' x='0' y='0' width='100%' height='100%'/></svg>"/>
+
+
+
+</svg>
+</script>
+<script>iframe('t9');</script>
+<p>矢量图片可以无限地缩放而不会失真，web端矢量图形技术主要是iconfont和svg。</p>
+
